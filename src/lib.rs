@@ -20,6 +20,13 @@ pub struct Universe {
     cells: Vec<Cell>,
 }
 
+// #[wasm_bindgen]
+// extern "C" {
+//     #[wasm_bindgen(js_namespace = WebAssembly)]
+//     #[wasm_bindgen(thread_local)]
+//     pub static MEMORY: JsValue;
+// }
+
 // display grid
 impl fmt::Display for Universe {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
@@ -90,5 +97,47 @@ impl Universe {
         }
 
         self.cells = next;
+    }
+
+    pub fn new() -> Universe {
+        let width = 64;
+        let height = 64;
+
+        let cells = (0..width * height)
+            .map(|i| {
+                if i % 2 == 0 || i % 7 == 0 {
+                    Cell::Alive
+                } else {
+                    Cell::Dead
+                }
+            })
+            .collect();
+
+        Universe {
+            width,
+            height,
+            cells,
+        }
+    }
+
+    #[wasm_bindgen]
+    pub fn memory() -> JsValue {
+        wasm_bindgen::memory()
+    }
+
+    pub fn render(&self) -> String {
+        self.to_string()
+    }
+
+    pub fn width(&self) -> u32 {
+        self.width
+    }
+
+    pub fn height(&self) -> u32 {
+        self.height
+    }
+
+    pub fn cells(&self) -> *const Cell {
+        self.cells.as_ptr()
     }
 }
